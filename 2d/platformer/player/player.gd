@@ -22,7 +22,19 @@ onready var sprite = $Sprite
 # cache bullet for fast access
 var Bullet = preload("res://player/Bullet.tscn")
 
+var move_left = false
+var move_right = false
 
+func _unhandled_input(event: InputEvent):
+	if event.is_action_pressed("move_left"):
+		move_left = true
+	elif event.is_action_released("move_left"):
+		move_left = false
+	elif event.is_action_pressed("move_right"):
+		move_right = true
+	elif event.is_action_released("move_right"):
+		move_right = false
+		
 func _physics_process(delta):
 	# Increment counters
 	shoot_time += delta
@@ -40,9 +52,9 @@ func _physics_process(delta):
 
 	# Horizontal movement
 	var target_speed = 0
-	if Input.is_action_pressed("move_left"):
+	if self.move_left:
 		target_speed -= 1
-	if Input.is_action_pressed("move_right"):
+	if self.move_right:
 		target_speed += 1
 
 	target_speed *= WALK_SPEED
@@ -79,9 +91,9 @@ func _physics_process(delta):
 		# We want the character to immediately change facing side when the player
 		# tries to change direction, during air control.
 		# This allows for example the player to shoot quickly left then right.
-		if Input.is_action_pressed("move_left") and not Input.is_action_pressed("move_right"):
+		if self.move_left and not self.move_right:
 			sprite.scale.x = -1
-		if Input.is_action_pressed("move_right") and not Input.is_action_pressed("move_left"):
+		if self.move_right and not self.move_left:
 			sprite.scale.x = 1
 
 		if linear_vel.y < 0:
